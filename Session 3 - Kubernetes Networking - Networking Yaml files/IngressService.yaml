@@ -1,0 +1,98 @@
+## Application Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aks-helloworld  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aks-helloworld
+  template:
+    metadata:
+      labels:
+        app: aks-helloworld
+    spec:
+      containers:
+      - name: aks-helloworld
+        image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
+        ports:
+        - containerPort: 80
+        env:
+        - name: TITLE
+          value: "Welcome to Azure Kubernetes Service (AKS)"	  
+---
+## ClusterIP Type service, it's the default one.
+apiVersion: v1
+kind: Service
+metadata:
+  name: aks-helloworld-clusterip
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: aks-helloworld
+
+
+---
+
+##Nodeport Type service
+apiVersion: v1
+kind: Service
+metadata:
+  name: aks-helloworld-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: aks-helloworld
+  ports:
+  - port: 80
+    # By default and for convenience, the `targetPort` is set to
+    # the same value as the `port` field.
+    targetPort: 80
+    # Optional field
+    # By default and for convenience, the Kubernetes control plane
+    # will allocate a port from a range (default: 30000-32767)
+    nodePort: 30007
+
+
+---
+
+##LoadBalancer Type service
+apiVersion: v1
+kind: Service
+metadata:
+  name: aks-helloworld-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: aks-helloworld
+  ports:
+  - port: 80
+    # By default and for convenience, the `targetPort` is set to
+    # the same value as the `port` field.
+    targetPort: 80
+
+
+
+---
+
+##Ingress 
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aks-helloworld
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: aks-helloworld-clusterip
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

@@ -1,0 +1,45 @@
+
+
+Deploy：
+kubectl -f xxx.yaml
+
+Check the application label:
+kubectl get deployment aks-helloworld-one -o yaml | grep  -A3 'labels:’
+
+Check service related info:
+kubectl get service <service-name> 
+kubectl describe service aks-helloworld-one
+
+
+Check endpoint related info:
+kubectl get endpoints aks-helloworld-one
+kubectl describe endpoints aks-helloworld-one
+
+Check the application pod ports:
+kubectl get deployment aks-helloworld-one -o yaml | grep -A3 'ports:'
+
+Check the pod info and IP address:
+kubectl get pods aks-helloworld-one
+kubectl get pods aks-helloworld-one -o wide
+
+
+Check ingress related info:
+kubectl get ingress aks-helloworld-one
+kubectl describe ingress aks-helloworld-one
+
+Check pod dns configuration: 
+kubectl exec -it busybox-clusterfirstwithhostnet -- cat /etc/resolv.conf
+
+Check network policy:
+kubectl get networkplicy
+kubectl describe networkplicy
+
+
+Check pod CIDR:
+kubectl cluster-info dump | grep -m 1 cluster-cidr
+
+Check each node assigned pod Ip ranger :
+kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}’
+
+
+
